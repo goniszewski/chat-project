@@ -34,13 +34,24 @@ exports.get_user_messages = async (req, res) => {
   }
 };
 
+exports.get_operator_rooms = async (req, res) => {
+  try {
+    const rooms = await Room.find({ operator: req.params.id });
+    if (rooms[0]) {
+      res.json(rooms);
+    } else {
+      res.json({ error: "User is not a operator." });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.add_user = async (req, res) => {
   try {
     const user = new User({
       login: req.body.login,
-      displayName: req.body.displayName,
       description: req.body.description,
-      online: req.body.online,
       password: req.body.password,
       operator: false,
     });
@@ -56,17 +67,20 @@ exports.update_user = async (req, res) => {
     if (req.body.login) {
       userTemp.login = req.body.login;
     }
-    if (req.body.displayName) {
-      userTemp.login = req.body.displayName;
+    if (req.body.password) {
+      userTemp.password = req.body.password;
     }
     if (req.body.description) {
-      userTemp.login = req.body.description;
-    }
-    if (req.body.online) {
-      userTemp.login = req.body.online;
+      userTemp.description = req.body.description;
     }
     if (req.body.operator) {
-      userTemp.login = req.body.operator;
+      userTemp.operator = req.body.operator;
+    }
+    if (req.body.lastSeen) {
+      userTemp.lastSeen = req.body.lastSeen;
+    }
+    if (req.body.room && !userTemp.room) {
+      userTemp.room = req.body.room;
     }
     userTemp.save();
   } catch (err) {

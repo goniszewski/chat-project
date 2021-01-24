@@ -9,6 +9,8 @@ router.get("/:id", user_service.get_user);
 
 router.get("/:id/messages", user_service.get_user_messages);
 
+router.get("/:id/rooms", user_service.get_operator_rooms);
+
 router.post("/:id", user_service.add_user);
 
 router.put("/", user_service.update_user);

@@ -3,8 +3,6 @@ const { Schema } = mongoose;
 
 const roomSchema = new Schema(
   {
-    name: String,
-    displayName: String,
     operator: {
       type: Schema.ObjectId,
       ref: "User",
@@ -15,7 +13,6 @@ const roomSchema = new Schema(
     },
     description: String,
     added: { type: Date, default: Date.now },
-    private: Boolean,
   },
   { toJSON: { virtuals: true } }
 );

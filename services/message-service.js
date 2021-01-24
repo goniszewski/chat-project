@@ -13,7 +13,7 @@ exports.get_message = async (req, res) => {
   }
 };
 
-exports.get_message = async (req, res) => {
+exports.get_messages = async (req, res) => {
   try {
     const messages = await Message.find();
     res.json(messages);
@@ -27,7 +27,6 @@ exports.add_message = async (req, res) => {
     const message = new message({
       sender: req.body.sender,
       room: req.body.room,
-      user: req.body.user,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -38,15 +37,6 @@ exports.update_message = async (req, res) => {
   try {
     let messageTemp = message.findById(req.params.id);
 
-    if (req.body.sender) {
-      messageTemp.sender = req.body.sender;
-    }
-    if (req.body.room) {
-      messageTemp.room = req.body.room;
-    }
-    if (req.body.user) {
-      messageTemp.user = req.body.user;
-    }
     if (req.body.removed) {
       messageTemp.removed = req.body.removed;
     }

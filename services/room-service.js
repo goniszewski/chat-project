@@ -13,6 +13,18 @@ exports.get_room = async (req, res) => {
   }
 };
 
+exports.get_room_messages = async (req, res) => {
+  try {
+    const room = await Room.findById(req.params.id).populate({
+      path: "messages",
+      match: { room: req.params.id },
+    });
+    res.json(room);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.get_rooms = async (req, res) => {
   try {
     const rooms = await Room.find();
@@ -67,20 +79,28 @@ exports.update_room = async (req, res) => {
   try {
     let roomTemp = Room.findById(req.params.id);
 
-    if (req.body.displayName) {
-      roomTemp.displayName = req.body.displayName;
-    }
     if (req.body.description) {
-      roomTemp.operator = req.body.operator;
-    }
-    if (req.body.user) {
-      roomTemp.login = req.body.user;
-    }
-    if (req.body.online) {
       roomTemp.description = req.body.description;
     }
     if (req.body.operator) {
-      roomTemp.private = req.body.private;
+      const thisUser = User.findById(req.body.operator);
+      if (thisUser.operator) {
+        roomTemp.operator = req.body.operator;
+      } else {
+        res.status(500).json({
+          error: `User with ID ${req.body.operator} is NOT an operator.`,
+        });
+      }
+    }
+    if (req.body.user) {
+      const thisUser = User.findById(req.body.user);
+      if (!thisUser.room) {
+        roomTemp.user = req.body.user;
+      }
+    } else {
+      res.status(500).json({
+        error: `User with ID ${req.body.user} is already connected with a room.`,
+      });
     }
     roomTemp.save();
   } catch (err) {

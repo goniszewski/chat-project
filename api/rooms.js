@@ -13,7 +13,7 @@ router.post("/:id", room_service.add_room);
 
 router.post("/:id/set-operator", room_service.set_operator);
 
-router.post("/:id/set-user", room_service.set_room);
+router.post("/:id/set-user", room_service.set_user);
 
 router.put("/", room_service.update_room);
 
