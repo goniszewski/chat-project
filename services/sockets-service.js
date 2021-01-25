@@ -1,21 +1,18 @@
-const socketio = require("socket.io");
-const app = require("../app");
+const server = require("../app");
 const message = require("../models/message");
-const io = socketio(app);
+
 const ch = require("./chat-instances");
 
-exports.socket_status = (req, res) => {
-  res.json({ status: socketInstance === null ? "connected" : "not connected" });
-};
-
-exports.socket_con = async () => {
-  io.on("connect", (socket) => {
+exports.socket_con = (io) => {
+  console.log("hi");
+  io.on("connection", (socket) => {
     socket.on("join", ({ roomId, userId }, callback) => {
       const { error, instance } = ch.addInstance({
         id: socket.id,
         room: roomId,
         user: userId,
       });
+      console.log("user ", userId, " joined ", roomId);
       if (error) return callback(error);
       socket.join(roomId);
       io.to(roomId).emit("status", {
@@ -26,8 +23,10 @@ exports.socket_con = async () => {
     socket.on("newMessage", (message, callback) => {
       const instance = ch.getInstance(socket.id);
       io.to(instance.room).emit("message", {
-        user: instance.user,
-        body: message,
+        room: message.room,
+        user: message.user,
+        body: message.body,
+        time: message.time,
       });
       callback();
     });
