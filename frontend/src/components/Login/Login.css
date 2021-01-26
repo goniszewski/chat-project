@@ -1,0 +1,17 @@
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1em;
+}
+
+.form-submit {
+  max-width: 10em;
+  margin-top: 2em;
+  margin-bottom: 1em;
+}
+
+.form-input {
+  margin-top: 1em;
+  width: 15em;
+}
