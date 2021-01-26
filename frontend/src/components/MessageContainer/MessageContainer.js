@@ -6,12 +6,23 @@ import Message from "../Message";
 import ChatContext from "../ChatContext";
 
 const MessageContainer = () => {
-  const { chatData } = useContext(ChatContext);
+  const { chatData, prevMessages } = useContext(ChatContext);
+  const messagesList = prevMessages.concat(chatData.messages);
+  const myRef = React.useRef(null);
+  const executeScroll = () => myRef.current.scrollIntoView();
+  React.useEffect(() => {
+    console.log("triggered");
+    executeScroll();
+  }, [messagesList]);
+
   return (
     <>
-      {chatData.messages.map((m, i) => (
-        <Message data={m} key={i} />
-      ))}
+      <div id="chat-cont">
+        {messagesList.map((m, i) => (
+          <Message data={m} key={m.time} />
+        ))}
+      </div>
+      <div ref={myRef}></div>
       <div
         className="ps-scrollbar-x-rail"
         style={{ left: "0px", bottom: "0px" }}

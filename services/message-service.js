@@ -22,6 +22,15 @@ exports.get_messages = async (req, res) => {
   }
 };
 
+exports.get_room_messages = async (req, res) => {
+  try {
+    const messages = await Message.find({ room: req.param.room });
+    res.json(messages);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.add_message = async (req, res) => {
   try {
     const message = new message({

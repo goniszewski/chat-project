@@ -1,6 +1,7 @@
 let instancesList = [];
 
-exports.addInstance = (id, roomId, userId) => {
+exports.addInstance = ({ id, roomId, userId }) => {
+  // console.log("add instance", id, roomId, userId); // DEBUG
   const instanceIndex = instancesList.indexOf(
     (instance) => instance.room === roomId && instance.user === userId
   );
@@ -21,7 +22,8 @@ exports.removeInstance = (id, roomId, userId) => {
 };
 
 exports.getInstance = (id) => {
-  instancesList.find((instance) => instance.id === id);
+  // console.log("getInstance -> id", id); // DEBUG
+  return instancesList.find((instance) => instance.id === id);
 };
 
 exports.getUsersInRoom = (roomId) =>

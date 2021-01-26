@@ -3,7 +3,8 @@ import ChatContext from "../ChatContext";
 import MessageContainer from "../MessageContainer";
 import ChatInput from "../ChatInput";
 import Login from "../Login";
-// import "./Chat.css";
+import Logout from "../Logout";
+import "./Chat.css";
 // import "../../main.css";
 
 const Chat = () => {
@@ -18,6 +19,7 @@ const Chat = () => {
                 <h4 className="card-title">
                   <strong>Chat</strong>
                 </h4>
+                {chatData.roomId ? <Logout /> : null}
               </div>
               {chatData.roomId ? (
                 <b>

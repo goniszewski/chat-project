@@ -16,26 +16,19 @@ function App() {
     roomId: null,
     userId: null,
     messages: [
-      {
-        sender: false,
-        body: "Test text",
-        time: 1611517683,
-      },
-      {
-        sender: true,
-        body: "Test text2",
-        time: 1611617683,
-      },
-      {
-        sender: true,
-        body: "Jestem Tomuś",
-        time: 1611918683,
-      },
+      // {
+      //   sender: false,
+      //   body: "Test text",
+      //   time: 1611517683,
+      // },
+      // {
+      //   sender: true,
+      //   body: "Test text2",
+      //   time: 1611617683,
+      // },
     ],
   });
-  // const [roomId, setRoomId] = useState("600b206903bf19b28c059f1c");
-  // const [userId, setUserId] = useState("600b206903bf19b28c059f1c");
-  const [loggedUsers, setLoggedUsers] = useState(null);
+  const [prevMessages, setPrevMessages] = useState([]);
 
   const onSendNewMessage = (text) => {
     setChatData({
@@ -61,42 +54,73 @@ function App() {
       userId: userId,
     });
   };
+  const onLogout = () => {
+    setChatData({
+      ...chatData,
+      roomId: null,
+      userId: null,
+    });
+  };
+
+  useEffect(() => {
+    if (chatData.roomId) {
+      socket.on("message", (message) => {
+        if (message.user !== chatData.userId) {
+          setChatData({
+            ...chatData,
+            messages: [
+              ...chatData.messages,
+              {
+                sender: false,
+                body: message.body,
+                time: Date.now(),
+              },
+            ],
+          });
+        }
+      });
+    }
+  }, [chatData.roomId, chatData]);
 
   useEffect(() => {
     socket = io(chatData.api);
-
-    socket.emit(
-      "join",
-      { roomId: chatData.roomId, userId: chatData.userId },
-      (err) => {
-        if (err) {
-          console.log({ error: err });
+    if (chatData.roomId) {
+      socket.emit(
+        "join",
+        { roomId: chatData.roomId, userId: chatData.userId },
+        (err) => {
+          if (err) {
+            console.log({ error: err });
+          }
         }
-      }
-    );
-    socket.on("message", (message) => {
-      setChatData({
-        ...chatData,
-        messages: [
-          ...chatData.messages,
-          {
-            sender: message.user === chatData.userId,
-            body: message.body,
-            time: Date.now(),
-          },
-        ],
-      });
-    });
+      );
 
-    socket.on("status", ({ status }) => {
-      if (status.room === chatData.roomId) {
-        setLoggedUsers(status);
-      }
-    });
-  }, []);
+      socket.on("prevMessages", (pm) => {
+        setPrevMessages(
+          pm.map((m) => {
+            let time = new Date(m.added).getTime();
+            console.log("time", typeof m.added, "timeConv", time);
+            return {
+              sender: m.sender === chatData.userId,
+              body: m.content,
+              time: time,
+            };
+          })
+        );
+      });
+    }
+
+    // socket.on("status", ({ status }) => {
+    //   if (status.room === chatData.roomId) {
+    //     setLoggedUsers(status);
+    //   }
+    // });
+  }, [chatData.roomId]);
 
   return (
-    <ChatContext.Provider value={{ chatData, onSendNewMessage, onLogin }}>
+    <ChatContext.Provider
+      value={{ chatData, prevMessages, onSendNewMessage, onLogin, onLogout }}
+    >
       <div className="App">
         <Chat />
       </div>
