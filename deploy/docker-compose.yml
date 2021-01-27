@@ -1,0 +1,18 @@
+version: "3.1"
+
+services:
+  frontend:
+    build:
+      context: ../
+      dockerfile: deploy/frontend_dockerfile
+    restart: always
+    ports:
+      - 5000:5000
+
+  backend:
+    build:
+      context: ../
+      dockerfile: deploy/backend_dockerfile
+    restart: always
+    ports:
+      - 3003:3003
